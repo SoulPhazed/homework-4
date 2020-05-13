@@ -44,6 +44,17 @@ class Search(Component):
     JOBS_SWITCH = '//ul[contains(@class, "tabs__nav")]//a[contains(@href, "jobs")]'
     FREELANCERS_SWITCH = '//ul[contains(@class, "tabs__nav")]//a[contains(@href, "freelancers")]'
 
+    def get_search_type(self):
+        WebDriverWait(self.driver, 10).until(
+            ec.url_contains("search")
+        )
+        search_url = self.driver.current_url
+
+        if search_url.find("jobs") != -1:
+            return "jobs"
+        else:
+            return "freelancers"
+
     def switch_to_jobs(self):
         switcher = WebDriverWait(self.driver, 10).until(
             ec.element_to_be_clickable((By.XPATH, self.JOBS_SWITCH))
@@ -89,7 +100,7 @@ class SearchResults(Component):
     FL_SPECIALITY = ITEM + '//div[a[@class = "freelancer-item__name"]]/*[contains(text(), "Специализация")]'
     FL_COUNTRY = ITEM + '//li[@class="freelancer-item__block-info-item"]'
 
-    def get_jobs(self):
+    def get_jobs(self, limit=None):
         WebDriverWait(self.driver, 10).until(
             ec.visibility_of_element_located((By.XPATH, self.IS_RESULTS))
         )
@@ -104,7 +115,12 @@ class SearchResults(Component):
             results_raw = WebDriverWait(self.driver, 15).until(
                 ec.visibility_of_all_elements_located((By.XPATH, self.RESULTS))
             )
-            for i in range(1, len(results_raw) + 1):
+            if limit:
+                results_amount = limit
+            else:
+                results_amount = len(results_raw)
+
+            for i in range(1, results_amount + 1):
                 type_level_date = self.driver.find_element(By.XPATH, self.JOB_SMALL_INFO.format(i)).text.split(" - ")
 
                 job_data = {
@@ -128,7 +144,7 @@ class SearchResults(Component):
         )
         link.click()
 
-    def get_freelancers(self):
+    def get_freelancers(self, limit=None):
         WebDriverWait(self.driver, 10).until(
             ec.visibility_of_element_located((By.XPATH, self.IS_RESULTS))
         )
@@ -143,7 +159,12 @@ class SearchResults(Component):
             results_raw = WebDriverWait(self.driver, 15).until(
                 ec.visibility_of_all_elements_located((By.XPATH, self.RESULTS))
             )
-            for i in range(1, len(results_raw) + 1):
+            if limit:
+                results_amount = limit
+            else:
+                results_amount = len(results_raw)
+
+            for i in range(1, results_amount + 1):
                 fl_name = self.driver.find_element(By.XPATH, self.FL_NAME.format(i)).text.split(" ")
 
                 freelancer_data = {
@@ -151,7 +172,7 @@ class SearchResults(Component):
                         -1],
                     "first_name": fl_name[0],
                     "last_name": fl_name[1],
-                    "speciality": self.driver.find_element(By.XPATH, self.FL_SPECIALITY.format(i)).text.split(" ")[-1],
+                    "speciality": self.driver.find_element(By.XPATH, self.FL_SPECIALITY.format(i)).text.split(': ')[1],
                     "country": self.driver.find_element(By.XPATH, self.FL_COUNTRY.format(i)).text
                 }
                 results.append(freelancer_data)

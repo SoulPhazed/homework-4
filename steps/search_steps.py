@@ -12,9 +12,12 @@ class SearchSteps(Step):
 
         return
 
-    def get_results(self):
+    def get_results(self, limit=None):
         page = SearchPage(self.driver)
-        return page.results.get_jobs()
+        if page.search.get_search_type() == "jobs":
+            return page.results.get_jobs(limit)
+        else:
+            return page.results.get_freelancers(limit)
 
     def open_freelancers(self):
         page = SearchPage(self.driver)
@@ -76,6 +79,10 @@ class SearchSteps(Step):
         page = SearchPage(self.driver)
         page.filter.set_speciality(speciality)
 
+    def set_level(self, level):
+        page = SearchPage(self.driver)
+        page.filter.set_level(level)
+
     def set_country(self, country):
         page = SearchPage(self.driver)
         page.filter.set_country(country)
@@ -93,4 +100,4 @@ class SearchSteps(Step):
 
     def go_to_freelancer(self, fl_id):
         page = SearchPage(self.driver)
-        page.results.go_to_profile(fl_id)
+        page.results.go_to_freelancer(fl_id)

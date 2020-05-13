@@ -17,6 +17,14 @@ def find_job_in_results(array, job):
     return False
 
 
+def find_freelancer_in_results(array, freelancer):
+    for item in array:
+        if (item["first_name"] == freelancer["first_name"]) and (item["last_name"] == freelancer["last_name"]) and (
+                item["speciality"] == freelancer["speciality"]) and (item["country"] == freelancer["country"]):
+            return True
+    return False
+
+
 def find_position_among_results(array, item_id):
     for i in range(len(array)):
         if find_job_in_results([array[i]], array[i]):
@@ -192,25 +200,59 @@ class SearchFreelancersTest(unittest.TestCase):
         self.driver.quit()
 
     def test_cross_to_page(self):
-        # TODO: Протестировать
         search_steps = SearchSteps(self.driver)
         search_steps.query_search(self.FREELANCER_DATA["last_name"])
         search_steps.go_to_freelancer(self.FREELANCER_DATA["id"])
         self.assertTrue(search_steps.compare_fl_url_with_id(expected=self.FREELANCER_DATA["id"]))
 
     def test_sorting(self):
-        # TODO: Можно писать сами тесты
-        pass
+        search_steps = SearchSteps(self.driver)
+        freelancers = search_steps.get_results(limit=2)
+
+        self.assertTrue(freelancers[0]["id"] > freelancers[1]["id"])
 
     def test_find_by_skills(self):
-        # TODO: Возможно, придется в своем аккаунте указывать навык
-        pass
+        DEFAULT_SKILLS = ['Selenium']
+        DEFAULT_DESCRIPTION = "Description from Selenium"
+        profile_steps = ProfileStepsForSearch(self.driver)
+        search_steps = SearchSteps(self.driver)
+
+        if len(self.FREELANCER_DATA['skills']) == 0:
+            profile_steps.open_settings_form()
+            profile_steps.set_skills(DEFAULT_SKILLS)
+            self.FREELANCER_DATA['skills'] = DEFAULT_SKILLS
+
+            if not self.FREELANCER_DATA['description']:
+                profile_steps.set_description(DEFAULT_DESCRIPTION)
+                self.FREELANCER_DATA['description'] = DEFAULT_DESCRIPTION
+            profile_steps.submit_settings()
+
+        search_steps.open_freelancers()
+        search_steps.query_search(self.FREELANCER_DATA["skills"][0])
+        freelancers = search_steps.get_results()
+
+        self.assertTrue(find_freelancer_in_results(array=freelancers, freelancer=self.FREELANCER_DATA))
 
     def test_find_by_name(self):
-        pass
+        search_steps = SearchSteps(self.driver)
+        search_steps.query_search(self.FREELANCER_DATA["first_name"] + " " + self.FREELANCER_DATA["last_name"])
+        freelancers = search_steps.get_results()
+
+        self.assertTrue(find_freelancer_in_results(array=freelancers, freelancer=self.FREELANCER_DATA))
 
     def test_filter_by_level(self):
-        pass
+        search_steps = SearchSteps(self.driver)
+        search_steps.query_search(self.FREELANCER_DATA["last_name"])
+        search_steps.set_level(self.FREELANCER_DATA["level"])
+        freelancers = search_steps.get_results()
+
+        self.assertTrue(find_freelancer_in_results(array=freelancers, freelancer=self.FREELANCER_DATA))
 
     def test_filter_by_city(self):
-        pass
+        search_steps = SearchSteps(self.driver)
+        search_steps.query_search(self.FREELANCER_DATA["last_name"])
+        search_steps.set_country(self.FREELANCER_DATA['country'])
+        search_steps.set_city(self.FREELANCER_DATA["city"])
+        freelancers = search_steps.get_results()
+
+        self.assertTrue(find_freelancer_in_results(array=freelancers, freelancer=self.FREELANCER_DATA))
