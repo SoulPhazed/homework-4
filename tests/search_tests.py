@@ -7,6 +7,7 @@ from steps.job_for_search import JobStepsForSearch
 from steps.auth_steps import AuthSteps
 from steps.search_steps import SearchSteps
 from steps.profile_for_search import ProfileStepsForSearch
+from steps.user_menu_steps import UserMenuSteps
 
 
 def find_job_in_results(array, job):
@@ -34,6 +35,8 @@ def find_position_among_results(array, item_id):
 
 
 class SearchJobsTest(unittest.TestCase):
+    AUTH_ATTEMPTS = 5
+
     def setUp(self):
         browser = os.environ.get('BROWSER', 'CHROME')
 
@@ -59,7 +62,11 @@ class SearchJobsTest(unittest.TestCase):
         auth_steps = AuthSteps(self.driver)
         search_steps = SearchSteps(self.driver)
 
-        auth_steps.login_as_client()
+        for i in range(self.AUTH_ATTEMPTS):
+            status = auth_steps.login_as_client()
+            if status is True:
+                break
+
         job_steps = JobStepsForSearch(self.driver)
         job_steps.create_custom(self.JOB_DATA)
 
@@ -180,6 +187,8 @@ class SearchJobsTest(unittest.TestCase):
 
 
 class SearchFreelancersTest(unittest.TestCase):
+    AUTH_ATTEMPTS = 5
+
     def setUp(self):
         browser = os.environ.get('BROWSER', 'CHROME')
 
@@ -191,8 +200,14 @@ class SearchFreelancersTest(unittest.TestCase):
         auth_steps = AuthSteps(self.driver)
         profile_steps = ProfileStepsForSearch(self.driver)
         search_steps = SearchSteps(self.driver)
+        user_menu = UserMenuSteps(self.driver)
 
-        auth_steps.login_as_freelancer()
+        for i in range(self.AUTH_ATTEMPTS):
+            status = auth_steps.login_as_freelancer()
+            if status is True:
+                break
+
+        user_menu.to_profile()
         self.FREELANCER_DATA = profile_steps.get_info()
         search_steps.open_freelancers()
 

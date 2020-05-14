@@ -3,6 +3,7 @@ from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as ec
 from selenium.webdriver.common.action_chains import ActionChains
+from selenium.common.exceptions import TimeoutException
 
 from tests.general import Page, Component
 
@@ -35,6 +36,8 @@ class MyJobsPageForSearch(Page):
 
 
 class JobFormForSearch(Component):
+    LOAD_STATUS_ELEMENTS = '//header//ul[contains(@class, "navbar__nav_right")]//li'
+
     JOB_TYPE = '//input[@name="jobTypeId" and @value="{}"]'
     JOB_LEVEL = '//input[@name="experienceLevelId" and @value="{}"]'
     JOB_TITLE = '//input[@name="title"]'
@@ -77,6 +80,22 @@ class JobFormForSearch(Component):
         "Продвинутый": "2",
         "Эксперт": "3",
     }
+
+    def wait_for_load(self):
+        ATTEMPTS = 5
+
+        for i in range(ATTEMPTS):
+            try:
+                nav_elements = WebDriverWait(self.driver, 1).until(
+                    ec.visibility_of_all_elements_located((By.XPATH, self.LOAD_STATUS_ELEMENTS))
+                )
+            except TimeoutException:
+                nav_elements = []
+
+            if len(nav_elements) == 1:
+                break
+            else:
+                time.sleep(1)
 
     def set_type(self, job_type):
         job_type_inner = self.JOB_TYPE_MATCH[job_type]

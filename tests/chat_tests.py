@@ -133,7 +133,12 @@ class ChatTest(unittest.TestCase):
         }
         self.go_to_chat()
         chat_steps = ChatSteps(self.driver, self.JOB_DATA["id"])
-        chat_steps.offer_contract(self.PROPOSAL_ID)
+        chat_availability = chat_steps.offer_contract(self.PROPOSAL_ID)
+
+        if chat_availability is False:
+            print("chat_closing: chat is not available")
+            self.assertTrue(chat_availability)
+
         chat_steps.fill_contract_form(self.PROPOSAL_ID, CONTRACT_INFO)
         chat_steps.submit_contract_form(self.PROPOSAL_ID)
 

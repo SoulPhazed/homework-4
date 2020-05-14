@@ -1,26 +1,21 @@
-import time
 from tests.general import Step
-from pages.profile_for_search import FreelancerPage, FreelancerSettingsPage
+from pages.profile_for_search import FreelancerPage, FreelancerSettingsPage, AccountSettingsPage
 from pages.search_page import SearchPage
 
 
 class ProfileStepsForSearch(Step):
     def get_info(self):
         freelancer_page = FreelancerPage(self.driver)
-        search_page = SearchPage(self.driver)
-        search_page.open()
-
-        search_page.user_menu.toggle()
-        search_page.user_menu.go_to_profile()
-        # status = search_page.user_menu.check_crossing(search_url)
-        # if status is True:
-        #     break
-
         return freelancer_page.info.get_info()
 
     def get_profile_id(self):
         page = FreelancerPage(self.driver)
         return page.info.get_id()
+
+    def get_profile_name(self):
+        page = AccountSettingsPage(self.driver)
+        page.open()
+        return page.form.get_name()
 
     def open_settings_form(self):
         page = FreelancerSettingsPage(self.driver)

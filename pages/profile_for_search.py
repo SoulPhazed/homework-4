@@ -18,6 +18,31 @@ class FreelancerPage(Page):
         return ProfileInfo(self.driver)
 
 
+class AccountSettingsPage(Page):
+    PATH = '/settings?tab=account'
+
+    @property
+    def form(self):
+        return AccountSettingsForm(self.driver)
+
+
+class AccountSettingsForm(Component):
+    DATA_LOAD_STATUS = '//form[@id="mainSettingsForm"]//input[@name="email" and string-length(@value) > 0]'
+    LAST_NAME_INPUT = '//form[@id="mainSettingsForm"]//input[@name="secondName"]'
+    FIRST_NAME_INPUT = '//form[@id="mainSettingsForm"]//input[@name="firstName"]'
+
+    def get_name(self):
+        WebDriverWait(self.driver, 10).until(
+            ec.presence_of_element_located((By.XPATH, self.DATA_LOAD_STATUS))
+        )
+
+        name_info = {
+            "first_name": self.driver.find_element(By.XPATH, self.FIRST_NAME_INPUT).get_attribute("value"),
+            "last_name": self.driver.find_element(By.XPATH, self.LAST_NAME_INPUT).get_attribute("value"),
+        }
+        return name_info
+
+
 class FreelancerSettingsPage(Page):
     PATH = '/settings?tab=freelancer'
 

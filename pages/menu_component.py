@@ -9,6 +9,7 @@ from tests.general import Component
 
 
 class ProfileMenu(Component):
+    LOGIN_BUTTON = '//header//a[@href="/login"]'
     DROPDOWN_TOGGLE = '//header//button[contains(@class, "dropdown__toggle") and .//img]'
 
     CONTRACTS = '//header//a[contains(@href, "contracts")]'
@@ -38,6 +39,13 @@ class ProfileMenu(Component):
 
         link.click()
 
+    def go_to_proposals(self):
+        link = WebDriverWait(self.driver, 10).until(
+            ec.element_to_be_clickable((By.XPATH, self.PROPOSALS))
+        )
+
+        link.click()
+
     def go_to_profile(self):
         link = WebDriverWait(self.driver, 10).until(
             ec.element_to_be_clickable((By.XPATH, self.PROFILE))
@@ -63,6 +71,24 @@ class ProfileMenu(Component):
         try:
             WebDriverWait(self.driver, 3).until(
                 ec.url_changes(old_url)
+            )
+        except TimeoutException:
+            return False
+        return True
+
+    def check_url(self, url_to_compare):
+        try:
+            WebDriverWait(self.driver, 5).until(
+                ec.url_contains(url_to_compare)
+            )
+        except TimeoutException:
+            return False
+        return True
+
+    def check_unauth(self):
+        try:
+            WebDriverWait(self.driver, 5).until(
+                ec.visibility_of_element_located((By.XPATH, self.LOGIN_BUTTON))
             )
         except TimeoutException:
             return False

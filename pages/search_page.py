@@ -6,7 +6,6 @@ from selenium.webdriver.common.keys import Keys
 from selenium.common.exceptions import NoSuchElementException, TimeoutException
 
 from tests.general import Page, Component
-from pages.menu_component import ProfileMenu
 
 
 def wait_results_required(func):
@@ -32,10 +31,6 @@ class SearchPage(Page):
     @property
     def results(self):
         return SearchResults(self.driver)
-
-    @property
-    def user_menu(self):
-        return ProfileMenu(self.driver)
 
 
 class Search(Component):

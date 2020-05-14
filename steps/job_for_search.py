@@ -23,6 +23,7 @@ class JobStepsForSearch(Step):
         page.open_form()
 
         form = page.form
+        form.wait_for_load()
         form.set_type(data_inner["type"])
         form.set_title(data_inner["title"])
         form.set_description(data_inner["description"])
