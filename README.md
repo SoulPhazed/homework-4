@@ -3,6 +3,10 @@
 
 **Проект - Fwork.live**
 
+Тестирование предполгает наличие тестовых аккаунтов как роли фрилансера, так и роли клиента.
+
+Запуск: `$ C_EMAIL=<client login> C_PASS=<client pass> F_EMAIL=<freelancer login> F_PASS=<freelancer pass> ./run_tests.py`
+
 ### Чек-лист
 
 1. Поиск

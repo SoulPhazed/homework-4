@@ -18,8 +18,8 @@ class AuthSteps(Step):
         auth_page = AuthPage(self.driver)
         auth_page.open()
         form = auth_page.form
-        form.set_login(os.getenv('F_EMAIL') if os.getenv('F_EMAIL') else 'anjou.naruko@list.ru')
-        form.set_password(os.getenv('F_PASS') if os.getenv('F_PASS') else '111111')
+        form.set_login(os.getenv('F_EMAIL'))
+        form.set_password(os.getenv('F_PASS'))
         form.submit()
 
         if avoid_fetch_error:
@@ -30,8 +30,8 @@ class AuthSteps(Step):
         auth_page = AuthPage(self.driver)
         auth_page.open()
         form = auth_page.form
-        form.set_login(os.getenv('C_EMAIL') if os.getenv('C_EMAIL') else 'vlasov@mail.ru')
-        form.set_password(os.getenv('C_PASS') if os.getenv('C_PASS') else '111111')
+        form.set_login(os.getenv('C_EMAIL'))
+        form.set_password(os.getenv('C_PASS'))
         form.submit()
 
         if avoid_fetch_error:
